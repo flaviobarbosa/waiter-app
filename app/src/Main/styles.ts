@@ -26,6 +26,4 @@ export const Footer = styled.View`
 `;
 
 
-export const FooterContainer = styled.SafeAreaView`
-
-`;
+export const FooterContainer = styled.SafeAreaView``;
