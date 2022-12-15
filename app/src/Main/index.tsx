@@ -21,6 +21,7 @@ export function Main() {
 
   function handlCancelOrder() {
     setSelectedTable('');
+    setCartItems([]);
   }
 
   function handleAddToCart(product: Product) {
