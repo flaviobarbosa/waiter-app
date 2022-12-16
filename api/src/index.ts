@@ -1,16 +1,20 @@
-import path from 'node:path';
+import path from "node:path";
 
-import express from 'express';
-import mongoose from 'mongoose';
+import express from "express";
+import mongoose from "mongoose";
 
-import { router } from './routes';
+import { router } from "./routes";
 
-mongoose.connect('mongodb://localhost:27017')
+mongoose
+  .connect("mongodb://localhost:27017")
   .then(() => {
     const app = express();
     const port = 3001;
 
-    app.use('/uploads', express.static(path.resolve(__dirname, '..', 'uploads')));
+    app.use(
+      "/uploads",
+      express.static(path.resolve(__dirname, "..", "uploads"))
+    );
     app.use(express.json());
     app.use(router);
 
@@ -18,6 +22,4 @@ mongoose.connect('mongodb://localhost:27017')
       console.log(`🚀 Server is running on http://localhost:${port}`);
     });
   })
-  .catch(() => console.error('erro ao conectar no mongo'));
-
-
+  .catch(() => console.error("erro ao conectar no mongo"));

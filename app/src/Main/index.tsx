@@ -1,8 +1,16 @@
+import axios from 'axios';
 import { ActivityIndicator } from 'react-native';
 
-import { CategoriesContainer, Container, Footer, FooterContainer, MenuContainer, CenteredContainer } from './styles';
+import {
+  CategoriesContainer,
+  CenteredContainer,
+  Container,
+  Footer,
+  FooterContainer,
+  MenuContainer
+} from './styles';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '../components/Button';
 import { Cart } from '../components/Cart';
 import { Categories } from '../components/Categories';
@@ -12,16 +20,29 @@ import { TableModal } from '../components/TableModal';
 import { CartItem } from '../types/CartItem';
 import { Product } from '../types/Product';
 
-import { products as mockProducts } from '../mocks/products';
 import { Empty } from '../components/Icons/Empty';
 import { Text } from '../components/Text';
+import { Category } from '../types/Category';
 
 export function Main() {
   const [isTableModalVisible, setIsTableModalVisible] = useState(false);
   const [selectedTable, setSelectedTable] = useState('');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isLoading] = useState(false);
-  const [products] = useState<Product[]>(mockProducts);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>();
+
+  useEffect(() => {
+    axios.get('http://192.168.1.3:3001/categories').then((response) => {
+      setCategories(response.data);
+    });
+  }, []);
+
+  useEffect(() => {
+    axios.get('http://192.168.1.3:3001/products').then((response) => {
+      setProducts(response.data);
+    });
+  }, []);
 
   function handleSaveTable(table: string) {
     setSelectedTable(table);
@@ -38,12 +59,14 @@ export function Main() {
     }
 
     setCartItems((prevState) => {
-      const itemIndex = prevState.findIndex(cartItem => cartItem.product._id === product._id);
+      const itemIndex = prevState.findIndex(
+        (cartItem) => cartItem.product._id === product._id
+      );
 
       if (itemIndex < 0) {
         return prevState.concat({
           quantity: 1,
-          product
+          product,
         });
       }
 
@@ -52,7 +75,7 @@ export function Main() {
 
       newCartItems[itemIndex] = {
         ...item,
-        quantity: item.quantity + 1
+        quantity: item.quantity + 1,
       };
 
       return newCartItems;
@@ -61,7 +84,9 @@ export function Main() {
 
   function handleDecrementCartItem(product: Product) {
     setCartItems((prevState) => {
-      const itemIndex = prevState.findIndex(cartItem => cartItem.product._id === product._id);
+      const itemIndex = prevState.findIndex(
+        (cartItem) => cartItem.product._id === product._id
+      );
 
       const item = prevState[itemIndex];
       const newCartItems = [...prevState];
@@ -74,7 +99,7 @@ export function Main() {
 
       newCartItems[itemIndex] = {
         ...item,
-        quantity: item.quantity - 1
+        quantity: item.quantity - 1,
       };
 
       return newCartItems;
@@ -91,33 +116,29 @@ export function Main() {
 
         {isLoading ? (
           <CenteredContainer>
-            <ActivityIndicator color='#d73035' size='large'/>
+            <ActivityIndicator color="#d73035" size="large" />
           </CenteredContainer>
         ) : (
           <>
             <CategoriesContainer>
-              <Categories />
+              <Categories categories={categories} />
             </CategoriesContainer>
 
             {products.length > 0 ? (
               <MenuContainer>
-                <Menu
-                  onAddToCart={handleAddToCart}
-                  products={products}
-                />
+                <Menu onAddToCart={handleAddToCart} products={products} />
               </MenuContainer>
             ) : (
               <CenteredContainer>
                 <Empty />
 
-                <Text color='#666' style={{ marginTop: 24 }}>
+                <Text color="#666" style={{ marginTop: 24 }}>
                   Nenhum produto foi encontrado
                 </Text>
               </CenteredContainer>
             )}
           </>
         )}
-
       </Container>
       <Footer>
         <FooterContainer>
@@ -126,7 +147,7 @@ export function Main() {
               onPress={() => setIsTableModalVisible(true)}
               disabled={isLoading}
             >
-            Novo Pedido
+              Novo Pedido
             </Button>
           )}
         </FooterContainer>
