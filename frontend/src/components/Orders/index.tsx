@@ -1,53 +1,39 @@
+import { useEffect, useState } from 'react';
 import { Order } from '../../types/Order';
+import { api } from '../../utils/api';
 import { OrdersBoard } from '../OrdersBoard';
 import { Container } from './styles';
 
-const orders: Order[] = [
-  {
-    '_id': '6375de3dac098619417ced2c',
-    'table': '123',
-    'status': 'WAITING',
-    'products': [
-      {
-        'product': {
-          'name': 'Pizza quatro queijos',
-          'imagePath': '1668617302863-quatro-queijos.png',
-          'price': 40,
-        },
-        'quantity': 3,
-        '_id': '6375de3dac098619417ced2d'
-      },
-      {
-        'product': {
-          'name': 'Coca Cola',
-          'imagePath': '1668617974439-coca-cola.png',
-          'price': 7,
-        },
-        'quantity': 2,
-        '_id': '6375de3dac098619417ced2e'
-      }
-    ],
-  }
-];
-
 export function Orders() {
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    api.get('/orders')
+      .then(({ data }) => {
+        setOrders(data);
+      });
+  }, []);
+
+  const waiting = orders.filter(order => order.status === 'WAITING');
+  const production = orders.filter(order => order.status === 'IN_PRODUCTION');
+  const done = orders.filter(order => order.status === 'DONE');
 
   return (
     <Container>
       <OrdersBoard
         icon="🕧"
         title="Fila de espera"
-        orders={orders}
+        orders={waiting}
       />
       <OrdersBoard
         icon="👨‍🍳"
         title="Em preparação"
-        orders={[]}
+        orders={production}
       />
       <OrdersBoard
         icon="✅"
         title="Pronto"
-        orders={[]}
+        orders={done}
       />
     </Container>
   );
