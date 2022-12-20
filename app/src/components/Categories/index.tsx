@@ -5,11 +5,11 @@ import { Category } from '../../types/Category';
 import { Text } from '../Text';
 import { CategoryContainer, Icon } from './styles';
 
-interface CategoryProps {
+interface CategoriesProps {
   categories: Category[];
 }
 
-export function Categories({ categories }: CategoryProps) {
+export function Categories({ categories }: CategoriesProps) {
   const [selectedCategory, setSelectedCategory] = useState('');
 
   function handleSelectCategory(categoryId: string) {
